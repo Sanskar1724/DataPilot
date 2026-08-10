@@ -1,0 +1,364 @@
+DataPilot — AI-Assisted Data Engineering
+Project architecture
+                         ┌──────────────────────┐
+                         │       USER           │
+                         │ CSV / JSON / Excel   │
+                         │ Pipeline / Question  │
+                         └──────────┬───────────┘
+                                    │
+                                    ▼
+                    ┌─────────────────────────────┐
+                    │       STREAMLIT UI          │
+                    │                             │
+                    │ • Upload Data               │
+                    │ • Pipeline Status           │
+                    │ • Quality Report            │
+                    │ • AI Explanation             │
+                    │ • Suggested Fixes            │
+                    └──────────────┬──────────────┘
+                                   │
+                                   ▼
+              ┌────────────────────────────────────────┐
+              │             APPLICATION CORE            │
+              │                                        │
+              │  Pipeline Orchestrator                  │
+              │  ├── Ingestion                         │
+              │  ├── Profiling                         │
+              │  ├── Validation                        │
+              │  ├── Transformation                     │
+              │  ├── Quality Analysis                   │
+              │  └── Reporting                          │
+              └───────────────┬────────────────────────┘
+                              │
+             ┌────────────────┼─────────────────┐
+             │                │                 │
+             ▼                ▼                 ▼
+      ┌─────────────┐  ┌──────────────┐  ┌──────────────┐
+      │ DATA ENGINE │  │ QUALITY      │  │ AI ENGINE    │
+      │             │  │ ENGINE       │  │              │
+      │ Pandas      │  │ Rules        │  │ OpenRouter   │
+      │ DuckDB      │  │ Schema       │  │ 7–9B Model   │
+      │ PyArrow     │  │ Anomalies    │  │              │
+      └──────┬──────┘  └──────┬───────┘  └──────┬───────┘
+             │                │                  │
+             └────────────────┼──────────────────┘
+                              ▼
+                    ┌─────────────────────┐
+                    │     STORAGE         │
+                    │                     │
+                    │ SQLite              │
+                    │ Parquet             │
+                    │ Local files         │
+                    └──────────┬──────────┘
+                               │
+                               ▼
+                    ┌─────────────────────┐
+                    │  REPORT / OUTPUT    │
+                    │                     │
+                    │ Clean Dataset       │
+                    │ Quality Report      │
+                    │ Pipeline Logs       │
+                    │ AI Recommendations  │
+                    └─────────────────────┘
+The most important architectural principle
+
+LLM ≠ Data Processing Engine
+
+Don't let the model directly clean millions of rows.
+
+Instead:
+
+                 DATA
+                  │
+                  ▼
+        Deterministic Processing
+        Pandas / DuckDB / Rules
+                  │
+                  ▼
+             Metadata
+                  │
+                  ▼
+             7–9B LLM
+                  │
+                  ▼
+        Reasoning / Explanation
+        Recommendation / Mapping
+                  │
+                  ▼
+        Deterministic Execution
+
+This makes the project much more technically credible.
+
+2. What the 7–9B model actually does
+
+Keep its responsibilities limited.
+
+Model DOES:
+understand schema semantics
+explain data-quality problems
+classify suspicious columns/values
+suggest transformations
+map old schema → new schema
+explain pipeline failures
+generate structured transformation plans
+Model DOES NOT:
+process the whole CSV
+calculate millions of rows
+replace Pandas
+replace SQL
+execute arbitrary Python
+directly modify files
+
+That separation is important.
+
+3. Recommended file structure
+
+Keep it simple:
+
+ai-data-engineer/
+│
+├── app/
+│   ├── main.py
+│   │
+│   ├── ui/
+│   │   ├── dashboard.py
+│   │   ├── upload.py
+│   │   ├── quality_report.py
+│   │   └── pipeline_view.py
+│   │
+│   ├── core/
+│   │   ├── pipeline.py
+│   │   ├── profiler.py
+│   │   ├── validator.py
+│   │   ├── transformer.py
+│   │   └── reporter.py
+│   │
+│   ├── data/
+│   │   ├── loader.py
+│   │   ├── schema.py
+│   │   └── storage.py
+│   │
+│   ├── ai/
+│   │   ├── client.py
+│   │   ├── prompts.py
+│   │   ├── analyzer.py
+│   │   └── parser.py
+│   │
+│   └── utils/
+│       ├── logger.py
+│       ├── config.py
+│       └── helpers.py
+│
+├── tests/
+│   ├── test_loader.py
+│   ├── test_profiler.py
+│   ├── test_validator.py
+│   ├── test_transformer.py
+│   └── test_ai.py
+│
+├── data/
+│   ├── raw/
+│   ├── processed/
+│   └── sample/
+│
+├── reports/
+│
+├── docs/
+│   ├── architecture.md
+│   ├── pipeline.md
+│   └── ai-design.md
+│
+├── .env.example
+├── .gitignore
+├── requirements.txt
+├── README.md
+└── LICENSE
+
+I would not add Docker, Kafka, Airflow, Spark, Kubernetes, PostgreSQL, Redis, vector DB, etc. initially.
+
+They'll make the project bigger without improving the core idea.
+
+4. Free tech stack
+
+For V1:
+
+Component	Technology
+Language	Python
+UI	Streamlit
+Data processing	Pandas
+Analytical SQL	DuckDB
+File format	Parquet
+Validation	Pydantic + custom rules
+Storage	SQLite
+LLM	OpenRouter
+Model	Open 7–9B model
+HTTP	httpx
+Testing	pytest
+Config	python-dotenv
+Logging	Python logging
+Version control	Git/GitHub
+
+Everything can be free/local except the OpenRouter inference cost, depending on the model/provider you select.
+
+For the first version, don't build around a specific model name. Configure it through:
+
+OPENROUTER_API_KEY=your_key
+OPENROUTER_MODEL=your_model
+
+That lets you change between available open models without touching the application architecture.
+
+5. How one request flows
+
+Suppose the user uploads:
+
+sales.csv
+Step 1 — ingestion
+CSV
+ ↓
+loader.py
+ ↓
+DataFrame
+Step 2 — profiling
+DataFrame
+ ↓
+profiler.py
+ ↓
+{
+  rows: 12000,
+  columns: 8,
+  missing_values: ...,
+  duplicates: ...,
+  dtypes: ...
+}
+Step 3 — deterministic quality checks
+Profiler
+ ↓
+Validator
+ ↓
+Quality Issues
+
+Example:
+
+12% missing customer_id
+3% duplicate rows
+date format inconsistent
+negative revenue detected
+Step 4 — send metadata to LLM
+
+Not the entire dataset.
+
+Schema
++
+Quality Issues
++
+Statistics
++
+Relevant samples
+
+↓
+
+OpenRouter
+
+↓
+
+7–9B model
+
+Step 5 — structured response
+
+The model returns something like:
+
+{
+  "issues": [
+    {
+      "column": "revenue",
+      "problem": "negative_values",
+      "severity": "high",
+      "recommendation": "flag_for_review"
+    }
+  ]
+}
+Step 6 — application validates AI response
+LLM JSON
+   ↓
+Pydantic
+   ↓
+Valid?
+ ┌─┴─┐
+No  Yes
+│    │
+Retry  ↓
+      Action Plan
+Step 7 — deterministic execution
+Action Plan
+     ↓
+Transformer
+     ↓
+Clean Dataset
+Step 8 — report
+                 REPORT
+─────────────────────────────
+Rows processed       12,000
+Issues found             31
+Auto-fixed               18
+Needs review             13
+
+AI recommendations:
+✓ Standardize dates
+✓ Remove exact duplicates
+⚠ Review negative revenue
+6. Your first MVP
+
+Don't build the whole architecture at once.
+
+Phase 1 — Data Engine
+CSV
+ ↓
+Pandas
+ ↓
+Profiler
+ ↓
+Quality Rules
+ ↓
+Report
+Phase 2 — AI Layer
+Quality Report
+ ↓
+OpenRouter
+ ↓
+7–9B Model
+ ↓
+Explanation
+Phase 3 — AI Recommendations
+Quality Issues
+ ↓
+LLM
+ ↓
+Structured Fix Plan
+ ↓
+Pydantic validation
+Phase 4 — Transformation
+Fix Plan
+ ↓
+Safe transformation functions
+ ↓
+Clean Dataset
+Phase 5 — UI
+Upload
+→ Analyze
+→ AI Explanation
+→ Review Fixes
+→ Apply
+→ Download
+Phase 6 — Evaluation
+
+Measure:
+
+Detection accuracy
+Recommendation accuracy
+LLM latency
+Token usage
+Failed AI responses
+False positives
+False negatives
+
+That evaluation phase is what will turn this from a college project into an actual AI/data-engineering project.se is what will turn this from a college project into an actual AI/data-engineering project.
