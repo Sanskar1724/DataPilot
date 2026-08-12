@@ -1,4 +1,12 @@
-# DataPilot — AI-Assisted Data Engineering
+# DataPilot
+
+<p align="center"> <img src="docs/assets/logo1.png" alt="DataPilot" width="220"> </p>
+
+<p align="center"> <strong>AI-Assisted Data Engineering</strong> </p>
+
+<p align="center"> <a href="#documentation">DOCS</a> · <a href="#architecture">ARCHITECTURE</a> · <a href="#quick-start">QUICK START</a> · <a href="#evaluation">EVALUATION</a> </p>
+
+<p align="center"> <img src="https://img.shields.io/badge/Python-3.11+-blue"> <img src="https://img.shields.io/badge/LLM-OpenRouter-purple"> <img src="https://img.shields.io/badge/UI-Streamlit-red"> <img src="https://img.shields.io/badge/Data-Pandas%20%7C%20DuckDB-orange"> <img src="https://img.shields.io/badge/License-MIT-green"> </p>
 
 Upload dirty CSV / JSON / Excel files. DataPilot profiles them, detects data-quality issues with deterministic rules, uses a small open LLM (OpenRouter) to explain the problems and recommend fixes, and applies only safe, deterministic transformations to produce a clean dataset + quality report.
 
@@ -11,14 +19,14 @@ Upload dirty CSV / JSON / Excel files. DataPilot profiles them, detects data-qua
 
 ## Status
 
-| Phase | Description | Status |
-|---|---|---|
-| 1 | Data Engine (ingest / profile / validate / transform / report) | ✅ done |
-| 2 | AI Layer (OpenRouter client, prompts, analyzer) | ✅ done |
-| 3 | AI Recommendations (Pydantic-validated Fix Plan) | ✅ done |
-| 4 | Safe Transformation (registered transforms only) | ✅ done |
-| 5 | Streamlit UI (upload → analyze → explain → review → apply → download) | ✅ done |
-| 6 | Evaluation (accuracy/latency/token tracking) | ⏳ next |
+| Phase | Description                                                           | Status  |
+| ----- | --------------------------------------------------------------------- | ------- |
+| 1     | Data Engine (ingest / profile / validate / transform / report)        | ✅ done |
+| 2     | AI Layer (OpenRouter client, prompts, analyzer)                       | ✅ done |
+| 3     | AI Recommendations (Pydantic-validated Fix Plan)                      | ✅ done |
+| 4     | Safe Transformation (registered transforms only)                      | ✅ done |
+| 5     | Streamlit UI (upload → analyze → explain → review → apply → download) | ✅ done |
+| 6     | Evaluation (accuracy/latency/token tracking)                          | ⏳ next |
 
 ## Quick start (Windows / VS Code)
 
@@ -39,11 +47,11 @@ python scripts/run_pipeline.py data/sample/sales_dirty.csv --ai
 
 ## Config
 
-| Env var | Default | Purpose |
-|---|---|---|
-| `OPENROUTER_API_KEY` | — | OpenRouter key (AI features) |
-| `OPENROUTER_MODEL` | `google/gemma-4-26b-a4b-it:free` | Model id (swap freely) |
-| `DATAPILOT_AI_ENABLED` | `true` | Master AI switch |
+| Env var                | Default                          | Purpose                      |
+| ---------------------- | -------------------------------- | ---------------------------- |
+| `OPENROUTER_API_KEY`   | —                                | OpenRouter key (AI features) |
+| `OPENROUTER_MODEL`     | `google/gemma-4-26b-a4b-it:free` | Model id (swap freely)       |
+| `DATAPILOT_AI_ENABLED` | `true`                           | Master AI switch             |
 
 See `.env.example` for the full list.
 
