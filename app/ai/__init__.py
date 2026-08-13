@@ -1,0 +1,1 @@
+"""AI layer: OpenRouter client, prompts, analyzer, parser."""
