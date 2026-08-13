@@ -1,6 +1,6 @@
 # DataPilot
 
-<p align="center"> <img src="docs/assets/logo1.png" alt="DataPilot" width="220"> </p>
+<p align="center"> <img src="docs/assets/logo1.png" alt="DataPilot" width="500"> </p>
 
 <p align="center"> <strong>AI-Assisted Data Engineering</strong> </p>
 
