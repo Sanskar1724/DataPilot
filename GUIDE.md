@@ -7,15 +7,16 @@ live deployment. It is written in order — follow the sections top to bottom.
 
 ## 1. What you need
 
-| Thing | Where to get it | Why |
-|---|---|---|
-| VS Code | https://code.visualstudio.com | The editor we use |
-| Python 3.11+ | https://www.python.org/downloads/ | The runtime (we use 3.14) |
-| Git | https://git-scm.com | Version control |
-| OpenRouter API key | https://openrouter.ai/keys | Powers the AI layer |
-| (Optional) GitHub account | https://github.com | Needed for deployment |
+| Thing                     | Where to get it                   | Why                       |
+| ------------------------- | --------------------------------- | ------------------------- |
+| VS Code                   | https://code.visualstudio.com     | The editor we use         |
+| Python 3.11+              | https://www.python.org/downloads/ | The runtime (we use 3.14) |
+| Git                       | https://git-scm.com               | Version control           |
+| OpenRouter API key        | https://openrouter.ai/keys        | Powers the AI layer       |
+| (Optional) GitHub account | https://github.com                | Needed for deployment     |
 
 > The current project is configured with:
+>
 > - Model: `google/gemma-4-26b-a4b-it:free`
 > - API key already placed in your local `.env` (kept out of Git).
 
@@ -64,6 +65,7 @@ python -m venv .venv
 ```
 
 If blocked, open a new terminal and run once:
+
 ```powershell
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 ```
@@ -107,8 +109,8 @@ Then run the deterministic pipeline on the dirty sample and print a report:
 python -c "from app.core.pipeline import Pipeline; r,_ = Pipeline(name='sales').run_deterministic('data/sample/sales_dirty.csv'); print(r.report.to_markdown())"
 ```
 
-You should see stats like *12,005 rows*, *negative revenue*, *mixed date
-formats*, etc. — all detected without any AI.
+You should see stats like _12,005 rows_, _negative revenue_, _mixed date
+formats_, etc. — all detected without any AI.
 
 ---
 
@@ -128,8 +130,8 @@ VS Code may ask you to pick a browser — allow it. The app opens at
 2. Click **Run Pipeline** → you get a profile (rows, columns, duplicates, issues).
 3. **Quality Report** page → deterministic issues listed with severity + shares,
    and the **AI Explanation** (uses your OpenRouter key + model).
-4. **AI Fix Plan** page → click **Generate Fix Plan**. The model reads *only the
-   metadata* (never your raw rows) and returns a validated fix plan.
+4. **AI Fix Plan** page → click **Generate Fix Plan**. The model reads _only the
+   metadata_ (never your raw rows) and returns a validated fix plan.
 5. Tick **"Review the plan above and approve"**, then **Apply Plan**.
 6. The cleaned dataset preview appears → **Download clean CSV / Parquet**.
 
@@ -147,6 +149,7 @@ python scripts/run_pipeline.py data/sample/sales_dirty.csv --ai
 ```
 
 Flags:
+
 - `--no-ai` — deterministic only (fast, free)
 - `--ai` — include the AI fix plan step
 - `--report` — write the markdown report to `reports/` (default on)
@@ -156,14 +159,14 @@ Flags:
 
 ## 7. Common problems
 
-| Symptom | Cause / fix |
-|---|---|
-| `MissingApiKeyError` | `.env` has no key → add `OPENROUTER_API_KEY` and restart Streamlit |
-| 429 errors | Free tier rate limit → wait a minute, retry, or use a paid model |
-| `Unknown transformation` | AI suggested a transform not in the safe registry — it is skipped+reported, never executed |
-| Column "not found" in plan | The model referenced a column that doesn't exist — validation rejects it safely |
-| `streamlit: not found` | venv not active → re-activate, or `pip install -r requirements.txt` |
-| Port already in use (8501) | `streamlit run app/main.py --server.port 8502` |
+| Symptom                    | Cause / fix                                                                                |
+| -------------------------- | ------------------------------------------------------------------------------------------ |
+| `MissingApiKeyError`       | `.env` has no key → add `OPENROUTER_API_KEY` and restart Streamlit                         |
+| 429 errors                 | Free tier rate limit → wait a minute, retry, or use a paid model                           |
+| `Unknown transformation`   | AI suggested a transform not in the safe registry — it is skipped+reported, never executed |
+| Column "not found" in plan | The model referenced a column that doesn't exist — validation rejects it safely            |
+| `streamlit: not found`     | venv not active → re-activate, or `pip install -r requirements.txt`                        |
+| Port already in use (8501) | `streamlit run app/main.py --server.port 8502`                                             |
 
 ---
 
@@ -184,6 +187,7 @@ git push -u origin main
 ```
 
 > Notes:
+>
 > - `.gitignore` already excludes `.env`, `data/processed/`, `reports/`.
 > - Create the empty repo in GitHub first ("New repository", no README).
 
@@ -215,26 +219,26 @@ pipeline for real.
 
 ### Deployment troubleshooting
 
-| Issue | Fix |
-|---|---|
-| App crashes on start | Check the Cloud **Logs** tab; usually a missing dependency → `pip install -r requirements.txt` locally and re-push |
-| AI fails in cloud but works locally | Secrets not saved correctly → re-check keys in Settings → Secrets |
-| Rate limited | Free model upstream limit, shared by all free users → switch model or add credits |
-| Port/health errors | Streamlit Cloud ignores local ports; keep `app/main.py` as the entrypoint |
+| Issue                               | Fix                                                                                                                |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| App crashes on start                | Check the Cloud **Logs** tab; usually a missing dependency → `pip install -r requirements.txt` locally and re-push |
+| AI fails in cloud but works locally | Secrets not saved correctly → re-check keys in Settings → Secrets                                                  |
+| Rate limited                        | Free model upstream limit, shared by all free users → switch model or add credits                                  |
+| Port/health errors                  | Streamlit Cloud ignores local ports; keep `app/main.py` as the entrypoint                                          |
 
 ---
 
 ## 9. Project map (where everything lives)
 
-| You want to… | Look in |
-|---|---|
-| Change the model / key | `.env` (+ Streamlit secrets after deploy) |
-| Add a quality rule | `app/core/validator.py` (detectors + `DETECTORS` list) |
-| Add a transformation | `app/core/transformer.py` (add a `_fn(..., column, args)` and register it) |
-| Change the AI prompt | `app/ai/prompts.py` |
-| Tune retries/timeouts | `app/ai/client.py`, `app/utils/config.py` |
-| Change a UI page | `app/ui/*.py` |
-| Understand the design | `docs/architecture.md`, `docs/pipeline.md`, `docs/ai-design.md` |
-| Full reference documentation | `PROJECT_DOCUMENTATION.md` |
+| You want to…                 | Look in                                                                    |
+| ---------------------------- | -------------------------------------------------------------------------- |
+| Change the model / key       | `.env` (+ Streamlit secrets after deploy)                                  |
+| Add a quality rule           | `app/core/validator.py` (detectors + `DETECTORS` list)                     |
+| Add a transformation         | `app/core/transformer.py` (add a `_fn(..., column, args)` and register it) |
+| Change the AI prompt         | `app/ai/prompts.py`                                                        |
+| Tune retries/timeouts        | `app/ai/client.py`, `app/utils/config.py`                                  |
+| Change a UI page             | `app/ui/*.py`                                                              |
+| Understand the design        | `docs/architecture.md`, `docs/pipeline.md`, `docs/ai-design.md`            |
+| Full reference documentation | `PROJECT_DOCUMENTATION.md`                                                 |
 
 Go live. 🚀

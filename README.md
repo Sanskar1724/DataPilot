@@ -1,6 +1,6 @@
 # DataPilot
 
-<p align="center"> <img src="docs/assets/logo1.png" alt="DataPilot" width="500"> </p>
+<p align="center"> <img src="docs/assets/logo1.png" alt="DataPilot" width="220"> </p>
 
 <p align="center"> <strong>AI-Assisted Data Engineering</strong> </p>
 
@@ -10,7 +10,7 @@
 
 Upload dirty CSV / JSON / Excel files. DataPilot profiles them, detects data-quality issues with deterministic rules, uses a small open LLM (OpenRouter) to explain the problems and recommend fixes, and applies only safe, deterministic transformations to produce a clean dataset + quality report.
 
-> **New here?** Read **[GUIDE.md](GUIDE.md)** — start-from-scratch in VS Code, localhost, and deployment.
+> **New here?** Read **[GUIDE.md](GUIDE.md)** — start-from-scratch in VS Code and localhost.
 > For full reference, read **[PROJECT_DOCUMENTATION.md](PROJECT_DOCUMENTATION.md)**.
 
 ## Core principle
