@@ -1,0 +1,242 @@
+================================================================================
+DATAPILOT — GITHUB PUSH SCHEDULE (Day-by-Day)
+================================================================================
+Goal     : Push the whole project to GitHub in small, clean, reviewable chunks.
+Assumption: All code is already written. This plan tells you WHAT to stage,
+            WHAT message to commit, and in what ORDER — using conventional
+            commit messages (feat/fix/docs/refactor/test/ci/chore).
+
+Rules
+-----
+1. Run steps top-to-bottom inside each day. Commands run in the project root.
+2. One commit per box. Do NOT merge steps.
+3. Files are staged with explicit paths — never `git add -A` unless a step says so.
+4. `.env` is gitignored; your API key never gets pushed.
+
+------------------------------------------------------------------------------------------
+DAY 1 — PROJECT FOUNDATION & ENVIRONMENT
+------------------------------------------------------------------------------------------
+Goal: Create the repo, the scaffold files, and the very first commits.
+
+Step 1.1  Initialize the repository (one-time, do first)
+--------------------------------------------------------
+  git init
+  git branch -M main
+
+Step 1.2  Scaffold metadata
+--------------------------------------------------------
+  git add .gitignore requirements.txt LICENSE README.md .env.example
+  git commit -m "chore: bootstrap project scaffold (ignore rules, deps, license, env template)"
+
+Step 1.3  First cut of documentation
+--------------------------------------------------------
+  git add GUIDE.md PROJECT_DOCUMENTATION.md
+  git commit -m "docs: add getting-started guide and full project documentation"
+
+Step 1.4  Streamlit theme configuration
+--------------------------------------------------------
+  git add .streamlit/config.toml
+  git commit -m "feat(ui): add custom streamlit dark theme"
+
+------------------------------------------------------------------------------------------
+DAY 2 — UTILITIES LAYER
+------------------------------------------------------------------------------------------
+Goal: Config, logging, and helpers — the plumbing nothing else works without.
+
+Step 2.1  Config loader
+--------------------------------------------------------
+  git add app/__init__.py app/utils/__init__.py app/utils/config.py
+  git commit -m "feat(core): add env-based settings with dotenv support"
+
+Step 2.2  Logging + shared helpers
+--------------------------------------------------------
+  git add app/utils/logger.py app/utils/helpers.py
+  git commit -m "feat(core): add logging setup and shared serialization helpers"
+
+------------------------------------------------------------------------------------------
+DAY 3 — DATA LAYER (Ingestion)
+------------------------------------------------------------------------------------------
+Goal: Load and describe data deterministically.
+
+Step 3.1  Loader (CSV/JSON/JSONL/Excel/Parquet + bytes)
+--------------------------------------------------------
+  git add app/data/__init__.py app/data/loader.py
+  git commit -m "feat(data): add multi-format ingestion loader"
+
+Step 3.2  Schema inference (LLM-safe metadata)
+--------------------------------------------------------
+  git add app/data/schema.py
+  git commit -m "feat(data): add schema inference producing compact metadata"
+
+Step 3.3  Storage (SQLite / Parquet / local files)
+--------------------------------------------------------
+  git add app/data/storage.py
+  git commit -m "feat(data): add sqlite, parquet and file persistence"
+
+Step 3.4  Loader tests
+--------------------------------------------------------
+  git add tests/__init__.py tests/test_loader.py
+  git commit -m "test(data): cover loader file+bytes ingestion and error paths"
+
+------------------------------------------------------------------------------------------
+DAY 4 — CORE ENGINE, PART 1 (Profile + Validate)
+------------------------------------------------------------------------------------------
+Goal: The deterministic "eyes" of DataPilot.
+
+Step 4.1  Profiler
+--------------------------------------------------------
+  git add app/core/__init__.py app/core/profiler.py
+  git commit -m "feat(core): add vectorized dataset profiler"
+
+Step 4.2  Validator (6 quality detectors)
+--------------------------------------------------------
+  git add app/core/validator.py
+  git commit -m "feat(core): add deterministic quality detectors and rule registry"
+
+Step 4.3  Profiler + validator tests
+--------------------------------------------------------
+  git add tests/test_profiler.py tests/test_validator.py
+  git commit -m "test(core): cover profiler and all validation detectors"
+
+------------------------------------------------------------------------------------------
+DAY 5 — CORE ENGINE, PART 2 (Transform + Report + Pipeline)
+------------------------------------------------------------------------------------------
+Goal: The deterministic "hands" and the orchestrator that ties them together.
+
+Step 5.1  Safe transformer registry + FixPlan
+--------------------------------------------------------
+  git add app/core/transformer.py
+  git commit -m "feat(core): add audited transform registry and fix-plan executor"
+
+Step 5.2  Reporter
+--------------------------------------------------------
+  git add app/core/reporter.py
+  git commit -m "feat(core): add markdown quality report builder"
+
+Step 5.3  Pipeline orchestrator
+--------------------------------------------------------
+  git add app/core/pipeline.py
+  git commit -m "feat(core): add stage orchestrator keeping AI out of processing"
+
+Step 5.4  Engine tests + sample dataset
+--------------------------------------------------------
+  git add tests/test_transformer.py tests/test_pipeline.py data/sample/sales_dirty.csv
+  git commit -m "test(core): cover transformer safety and end-to-end pipeline"
+
+------------------------------------------------------------------------------------------
+DAY 6 — AI LAYER (OpenRouter)
+------------------------------------------------------------------------------------------
+Goal: Deliver the reasoning layer — metadata in, validated plan out.
+
+Step 6.1  OpenRouter client
+--------------------------------------------------------
+  git add app/ai/__init__.py app/ai/client.py
+  git commit -m "feat(ai): add openrouter chat client with retries and usage tracking"
+
+Step 6.2  Prompt builders
+--------------------------------------------------------
+  git add app/ai/prompts.py
+  git commit -m "feat(ai): add metadata-only prompt builders"
+
+Step 6.3  Strict parser (Pydantic validation + guards)
+--------------------------------------------------------
+  git add app/ai/parser.py
+  git commit -m "feat(ai): add pydantic validation and column guards for model output"
+
+Step 6.4  Analyzer orchestrator
+--------------------------------------------------------
+  git add app/ai/analyzer.py
+  git commit -m "feat(ai): orchestrate metadata-to-validated-fixplan flow"
+
+Step 6.5  AI tests (mocked, no network)
+--------------------------------------------------------
+  git add tests/test_ai.py
+  git commit -m "test(ai): cover parser validation, guard rails and fallbacks"
+
+------------------------------------------------------------------------------------------
+DAY 7 — STREAMLIT UI
+------------------------------------------------------------------------------------------
+Goal: Wrap the engine + AI in the user interface.
+
+Step 7.1  Shared session state
+--------------------------------------------------------
+  git add app/ui/__init__.py app/ui/state.py
+  git commit -m "feat(ui): add shared session state helpers"
+
+Step 7.2  Design system (theme.py)
+--------------------------------------------------------
+  git add app/ui/theme.py
+  git commit -m "feat(ui): add central design system (css, hero, metric cards, badges)"
+
+Step 7.3  Dashboard + Upload pages
+--------------------------------------------------------
+  git add app/ui/dashboard.py app/ui/upload.py
+  git commit -m "feat(ui): add dashboard and upload pages"
+
+Step 7.4  Quality Report + Fix Plan pages
+--------------------------------------------------------
+  git add app/ui/quality_report.py app/ui/pipeline_view.py
+  git commit -m "feat(ui): add quality report and AI fix plan pages"
+
+Step 7.5  App entrypoint + UI tests
+--------------------------------------------------------
+  git add app/main.py tests/test_ui.py
+  git commit -m "feat(ui): add streamlit entrypoint; cover app with smoke tests"
+
+------------------------------------------------------------------------------------------
+DAY 8 — CLI, SAMPLE DATA & POLISH
+------------------------------------------------------------------------------------------
+Goal: The headless path, a second real-world sample, and final cleanup.
+
+Step 8.1  Headless CLI
+--------------------------------------------------------
+  git add scripts/run_pipeline.py
+  git commit -m "feat(cli): add headless pipeline runner"
+
+Step 8.2  Real-world demo samples
+--------------------------------------------------------
+  git add data/sample/dirty_cafe_sales.csv data/sample/crime_incidents_messy.csv `
+          data/sample/dirty_financial_transactions.csv `
+          data/sample/dirty_financial_transactions_clean.parquet `
+          data/sample/messy_IMDB_dataset.csv
+  git commit -m "data: add real-world messy demo samples (cafe, crime, finance, imdb)"
+
+Step 8.3  Feature additions discovered via the cafe dataset
+--------------------------------------------------------
+  git add app/core/validator.py app/core/transformer.py app/ai/prompts.py tests/test_validator.py tests/test_transformer.py
+  git commit -m "feat(core): add numeric-parser transform and non-numeric detector"
+
+Step 8.4  Docs landing
+--------------------------------------------------------
+  git add docs/architecture.md docs/pipeline.md docs/ai-design.md
+  git commit -m "docs: add architecture, pipeline and ai-design references"
+
+Step 8.5  Final verification + tag
+--------------------------------------------------------
+  (run)  python -m pytest -q            # expect: 45 passed
+  git add -A
+  git commit -m "chore: final sweep — clean outputs directory and report artifacts"
+  git tag v1.0.0
+  git log --oneline
+
+------------------------------------------------------------------------------------------
+DAY 9 — PUSH & VERIFY ON GITHUB (optional stretch, only if you want history staged now)
+------------------------------------------------------------------------------------------
+Goal: Publish the repository and confirm CI-less basics.
+
+Step 9.1  Create the remote (do once via https://github.com/new)
+Step 9.2  Push everything
+--------------------------------------------------------
+  git remote add origin https://github.com/USERNAME/datapilot.git
+  git push -u origin main
+  git push --tags
+
+Step 9.3  Confirm
+--------------------------------------------------------
+  - Open the repo URL and check the commits appear day-by-day.
+  - Confirm data/processed/, reports/, .env are NOT in the repo.
+
+================================================================================
+TIP: Running the whole project as ONE push? Then just do the DAY 9 steps
+straight away — the code base is already complete and all 45 tests pass.
+================================================================================
