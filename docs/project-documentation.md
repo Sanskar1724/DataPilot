@@ -102,9 +102,8 @@ S:\DataPilot
 │   ├── processed/           cleaned outputs (Parquet/CSV)
 │   └── sample/              sales_dirty.csv (12,005 rows)
 ├── reports/                 generated *_quality_*.md files
-├── docs/                    architecture.md, pipeline.md, ai-design.md
-├── GUIDE.md                 step-by-step getting-started guide
-├── PROJECT_DOCUMENTATION.md this file
+├── docs/                    architecture.md, pipeline.md, ai-design.md,
+│                            getting-started.md, project-documentation.md
 ├── .env.example             template for configuration
 ├── .env                     YOUR SECRETS (gitignored)
 ├── requirements.txt
@@ -307,7 +306,7 @@ Prints the report to stdout; optionally saves the report and cleaned dataset.
 
 ## 10. Deployment
 
-See **GUIDE.md §8** for the full walkthrough. In short:
+See **docs/getting-started.md §8** for the full walkthrough. In short:
 
 1. Push to GitHub (`.env` stays out of git).
 2. New app on **https://share.streamlit.io** → repo, branch `main`, file `app/main.py`.

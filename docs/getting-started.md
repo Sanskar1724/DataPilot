@@ -37,8 +37,9 @@ S:\DataPilot
 │   ├── ai/            # OpenRouter client, prompts, analyzer, parser
 │   ├── ui/            # Streamlit pages
 │   └── utils/         # config, logger, helpers
-├── tests/             # pytest suite (40 tests)
-├── data/sample/       # sample dirty dataset
+├── scripts/           # headless CLI (run_pipeline.py)
+├── tests/             # pytest suite (45 tests)
+├── data/sample/       # sample dirty datasets
 ├── reports/           # generated quality reports
 ├── docs/              # architecture / pipeline / ai-design / this guide
 └── .env               # YOUR SECRETS (do not share/commit)
@@ -239,6 +240,6 @@ pipeline for real.
 | Tune retries/timeouts        | `app/ai/client.py`, `app/utils/config.py`                                  |
 | Change a UI page             | `app/ui/*.py`                                                              |
 | Understand the design        | `docs/architecture.md`, `docs/pipeline.md`, `docs/ai-design.md`            |
-| Full reference documentation | `PROJECT_DOCUMENTATION.md`                                                 |
+| Full reference documentation | `docs/project-documentation.md`                                           |
 
 Go live. 🚀

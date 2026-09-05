@@ -6,6 +6,11 @@ __pycache__/
 venv/
 env/
 
+# Test / tooling caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
 # Env / secrets
 .env
 
